@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const app = express();
 
 // user - tareq
-//pass - STVMbgNLHprbExuc
+// pass - STVMbgNLHprbExuc
 
 app.use(cors());
 app.use(express.json());
@@ -23,12 +23,20 @@ async function run() {
   try {
     await client.connect();
     const postCollection = client.db("pingpong").collection("posts");
+    const profileCollection = client.db("pingpong").collection("profile");
 
     app.get("/posts", async (req, res) => {
       const query = {};
       const cursor = postCollection.find(query);
       const posts = await cursor.toArray();
       res.send(posts);
+    });
+
+    app.get("/profile", async (req, res) => {
+      const query = {};
+      const cursor = profileCollection.find(query);
+      const profile = await cursor.toArray();
+      res.send(profile);
     });
 
     // app.get("/service/:id", async (req, res) => {
@@ -38,13 +46,13 @@ async function run() {
     //   res.send(service);
     // });
 
-    // //POST
+    // POST
 
-    // app.post("/service", async (req, res) => {
-    //   const newService = req.body;
-    //   const result = await serviceCollection.insertOne(newService);
-    //   res.send(result);
-    // });
+    app.post("/profile", async (req, res) => {
+      const updateProfile = req.body;
+      const result = await profileCollection.insertOne(updateProfile);
+      res.send(result);
+    });
 
     // // DELETE
 
