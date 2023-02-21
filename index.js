@@ -32,14 +32,17 @@ async function run() {
       res.send(posts);
     });
 
-    app.get("/profile", async (req, res) => {
-      const query = {};
-      const cursor = profileCollection.find(query);
-      const profile = await cursor.toArray();
-      res.send(profile);
+    // indivisual profile
+
+    app.get("/profile/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await profileCollection.findOne({ email: email });
+      res.send(user);
     });
 
-    // app.get("/service/:id", async (req, res) => {
+
+
+    //   app.get("/service/:id", async (req, res) => {
     //   const id = req.params.id;
     //   const query = { _id: ObjectId(id) };
     //   const service = await serviceCollection.findOne(query);
@@ -48,12 +51,35 @@ async function run() {
 
     // POST
 
-    app.post("/profile", async (req, res) => {
+    app.post("/posts", async (req, res) => {
       const updateProfile = req.body;
-      const result = await profileCollection.insertOne(updateProfile);
+      const result = await postCollection.insertOne(updateProfile);
       res.send(result);
     });
 
+    // PUT Admin Role
+    app.put("/profile/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const profile = req.body;
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          name: profile.name,
+          address: profile.address,
+          course: profile.course,
+          picture: profile.picture,
+          subject: profile.subject,
+          university: profile.university,
+        },
+      };
+      const result = await profileCollection.updateMany(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
     // // DELETE
 
     // app.delete("/service/:id", async (req, res) => {
