@@ -40,15 +40,28 @@ async function run() {
       res.send(user);
     });
 
+    // get
+    app.get("/posts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const post = await postCollection.findOne(query);
+      res.send(post);
+    });
 
+    //Put Reaction
 
-    //   app.get("/service/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: ObjectId(id) };
-    //   const service = await serviceCollection.findOne(query);
-    //   res.send(service);
-    // });
-
+    app.patch("/posts/:id", async (req, res) => {
+      const id = req.params.id;
+      const post = req.body;
+      const filter = { _id: id };
+      const updateDoc = {
+        $set: {
+          love: post.love,
+        },
+      };
+      const result = await postCollection.updateOne(filter, updateDoc);
+      res.send({ result });
+    });
     // POST
 
     app.post("/posts", async (req, res) => {
@@ -57,7 +70,7 @@ async function run() {
       res.send(result);
     });
 
-    // PUT Admin Role
+    // PUT
     app.put("/profile/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
@@ -80,42 +93,6 @@ async function run() {
       );
       res.send(result);
     });
-    // // DELETE
-
-    // app.delete("/service/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: ObjectId(id) };
-    //   const result = await serviceCollection.deleteOne(query);
-    //   res.send(result);
-    // });
-
-    // //order collection
-    // app.get("/order", async (req, res) => {
-    //   const email = req.query.email;
-    //   if (email) {
-    //     const query = { email: email };
-    //     const cursor = orderCollection.find(query);
-    //     const orders = await cursor.toArray();
-    //     res.send(orders);
-    //   } else {
-    //     res.status(403).send({ message: "Forbidden access" });
-    //   }
-    // });
-
-    // app.post("/order", async (req, res) => {
-    //   const order = req.body;
-    //   const result = await orderCollection.insertOne(order);
-    //   res.send(result);
-    // });
-
-    // //auth JWT
-    // app.post("/login", async (req, res) => {
-    //   const user = req.body;
-    //   const accessToken = jwt.sign(user, process.env.ACCESS_KEY_ID, {
-    //     expiresIn: "1d",
-    //   });
-    //   res.send(accessToken);
-    // });
   } finally {
     //
   }
